@@ -16,14 +16,15 @@ trap 'exit_check $?' EXIT
 # sudo apt update && apt upgrade -y
 
 # Install debhelper
-yes | sudo apt install -y debhelper cryptsetup pkg-kde-tools pkexec rsync git wget || :
+yes | sudo apt install -y debhelper cryptsetup pkg-kde-tools pkexec rsync git wget || : >/dev/null 2>&1
 
 # Clone original
 git clone \
 	$SOURCE \
 	--depth 1 \
 	-b main \
-	clang
+	clang \
+	>/dev/null 2>&1
 
 mkdir -p build
 for ver in clang/clang-r*/; do
