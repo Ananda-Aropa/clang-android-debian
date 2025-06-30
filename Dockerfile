@@ -5,4 +5,4 @@ COPY . /build
 WORKDIR /build
 
 # Build binary package
-RUN ./docker_build.sh
+RUN --mount=type=bind,source=$(pwd),target=/build ./docker_build.sh

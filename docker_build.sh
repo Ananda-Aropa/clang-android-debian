@@ -43,3 +43,9 @@ dpkg-buildpackage $DEB_BUILD_ARGS
 # Uninstall packages and clean up
 apt autoremove --purge -y debhelper build-essential
 apt autoclean -y
+
+# Clean host files
+rm -rf clang
+
+# Bring files back
+cp -rf ../*.{deb,udeb,buildinfo,changes} .
