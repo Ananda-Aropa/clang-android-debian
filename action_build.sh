@@ -26,6 +26,8 @@ git clone \
 	clang \
 	>/dev/null 2>&1
 
+rm -rf clang/{.git,clang-stable,embedded-sysroots,profiles}
+
 mkdir -p build
 for ver in clang/clang-r*/; do
 	dir=build/$(basename $ver)
