@@ -55,7 +55,7 @@ jobs:
           echo "Origin: $ORIGIN" >>dist/conf/distributions
           echo 'Label: clang-android' >>dist/conf/distributions
           echo 'Codename: $RELEASE' >>dist/conf/distributions
-          echo "arch: $ARCH" >>dist/conf/distributions
+          echo "Arch: $ARCH" >>dist/conf/distributions
           echo "Components: " >>dist/conf/distributions
           echo "UDebComponents: " >>dist/conf/distributions
           echo "Description: " >>dist/conf/distributions
