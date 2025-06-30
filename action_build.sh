@@ -47,7 +47,8 @@ clang-android ($(./clang/bin/clang --version | grep version | awk -F " clang ver
 
 $(sed -n -r 's/^-/  */p' clang/clang_source_info.md)
 
- -- $MAINTAINER  $(date -u)
+ -- $MAINTAINER  $(date +"%a, %d %b %Y %H:%M:%S %z")
+
 EOF
 	cat <<EOF >debian/control
 Source: clang-android
@@ -65,8 +66,8 @@ Vcs-Git: $SOURCE
 Package: clang-android
 Architecture: $ARCH
 Depends:
- $${shlibs:Depends},
- $${misc:Depends},
+ \${shlibs:Depends},
+ \${misc:Depends},
 Description: Android Clang/LLVM Prebuilts
 EOF
 	cat <<EOF >debian/copyright
@@ -96,7 +97,7 @@ EOF
 #!/usr/bin/make -f
 
 %:
-	dh $$@
+	dh \$@
 EOF
 	cat <<EOF >debian/install
 clang opt/android
