@@ -141,9 +141,9 @@ EOF
 		-psxf build-$ARCH-$rev.tar \
 		--wildcards \
 		--no-anchored \
-		"clang-android*.deb" \
-		"clang-android*.buildinfo" \
-		"clang-android*.changes"
+		"*.deb" \
+		"*.buildinfo" \
+		"*.changes"
 	sudo rm -rf build-$ARCH-$rev.tar
 
 	cd $WORKDIR
