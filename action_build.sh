@@ -7,6 +7,7 @@ SOURCE="https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86
 # MAINTAINER="Bùi Gia Viện <shadichy@blisslabs.org>"
 # ARCH="amd64"
 # RELEASE="unstable"
+NAME=clang-android
 
 # avoid command failure
 exit_check() { [ "$1" = 0 ] || exit "$1"; }
@@ -39,11 +40,14 @@ for ver in clang/clang-r*/; do
 	# Copy files
 	cp $WORKDIR/{docker_build.sh,Dockerfile} .
 
+	# Env
+	VERSION=$(./clang/bin/clang --version | grep version | awk -F " clang version " '{print $2}' | cut -d ' ' -f 1)-$rev
+
 	# Generate debian config
 	mkdir -p debian/source
 	echo "3.0 (quilt)" >debian/source/format
 	cat <<EOF >debian/changelog
-clang-android ($(./clang/bin/clang --version | grep version | awk -F " clang version " '{print $2}' | cut -d ' ' -f 1)-$rev) $RELEASE; urgency=medium
+$NAME ($VERSION) $RELEASE; urgency=medium
 
 $(sed -n -r 's/^-/  */p' clang/clang_source_info.md)
 
@@ -51,7 +55,7 @@ $(sed -n -r 's/^-/  */p' clang/clang_source_info.md)
 
 EOF
 	cat <<EOF >debian/control
-Source: clang-android
+Source: $NAME
 Section: unknown
 Priority: optional
 Maintainer: $MAINTAINER
@@ -63,7 +67,7 @@ Homepage: $SOURCE
 Vcs-Browser: $SOURCE
 Vcs-Git: $SOURCE
 
-Package: clang-android
+Package: $NAME
 Architecture: $ARCH
 Depends:
  \${shlibs:Depends},
@@ -73,7 +77,7 @@ EOF
 	cat <<EOF >debian/copyright
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Source: $SOURCE
-Upstream-Name: clang-android
+Upstream-Name: $NAME
 Upstream-Contact: $MAINTAINER
 
 
@@ -138,9 +142,9 @@ EOF
 	sudo tar \
 		-C . \
 		-psxf build-$ARCH-$rev.tar \
-		--wildcards --no-anchored "*.deb" \
-		--wildcards --no-anchored "*.buildinfo" \
-		--wildcards --no-anchored "*.changes"
+		"${NAME}_${VERSION}_${ARCH}.deb" \
+		"${NAME}_${VERSION}_${ARCH}.buildinfo" \
+		"${NAME}_${VERSION}_${ARCH}.changes"
 	sudo rm -rf build-$ARCH-$rev.tar
 
 	cd $WORKDIR
