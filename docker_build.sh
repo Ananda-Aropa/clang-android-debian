@@ -45,7 +45,7 @@ apt autoremove --purge -y debhelper build-essential
 apt autoclean -y
 
 # Clean host files
-rm -rf clang
+rm -rf clang debian
 
 # Bring files back
 cp -rf ../*.{deb,udeb,buildinfo,changes} .
