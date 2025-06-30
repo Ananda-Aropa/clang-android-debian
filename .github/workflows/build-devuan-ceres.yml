@@ -1,0 +1,81 @@
+name: Generate .deb (ceres)
+
+on:
+  schedule:
+    - cron: "0 0 15 * *"
+  push:
+    branches:
+      - main
+    tags:
+      - v*
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build packages
+        env:
+          MAINTAINER: ${{ secrets.package_maintainer }}
+          ARCH: ${{ secrets.arch }}
+          RELEASE: ${{ secrets.codename }}
+        run: ./action_build.sh
+
+      - name: Generate distributions file
+        env:
+          GPG_SIGNING_KEY: ${{ secrets.gpg_signing_key }}
+          MAINTAINER: ${{ secrets.package_maintainer }}
+          ARCH: ${{ secrets.arch }}
+          RELEASE: ${{ secrets.codename }}
+          ORIGIN: ${{ secrets.origin }}
+        run: |
+          mkdir -p dist/conf
+          echo "Origin: $ORIGIN" >>dist/conf/distributions
+          echo 'Label: clang-android' >>dist/conf/distributions
+          echo 'Codename: $RELEASE' >>dist/conf/distributions
+          echo "arch: $ARCH" >>dist/conf/distributions
+          echo "Components: " >>dist/conf/distributions
+          echo "UDebComponents: " >>dist/conf/distributions
+          echo "Description: " >>dist/conf/distributions
+          if [ "$GPG_SIGNING_KEY" ]; then
+            KEY_OWNER=$(echo "$GPG_SIGNING_KEY" | gpg --import 2>&1 | grep -i ': public key "' | awk -F '"' '{print $2}')
+            if [ ! "$MAINTAINER" ]; then
+              MAINTAINER=$KEY_OWNER
+            fi
+            echo "DEBEMAIL='$(echo $MAINTAINER | awk -F '<' '{print $2}' | awk -F '>' '{print $1}')'" >>"$GITHUB_OUTPUT"
+            echo "DEBFULLNAME='$(echo $MAINTAINER | awk -F '<' '{print $1}')'" >>"$GITHUB_OUTPUT"
+            source "$GITHUB_OUTPUT"
+            KEY_FINGERPRINT=$(gpg --list-secret-key --with-subkey-fingerprint | grep -A3 "$MAINTAINER" | tail -2)
+            echo "SignWith: $KEY_FINGERPRINT" >>dist/conf/distributions
+          fi
+          cat dist/conf/distributions
+        shell: bash
+
+      - name: Generate repo artifact
+        env:
+          RELEASE: ${{ secrets.codename }}
+        run: ./action_repo.sh
+
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
