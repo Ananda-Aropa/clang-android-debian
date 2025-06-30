@@ -32,6 +32,7 @@ mkdir -p build
 for ver in clang/clang-r*/; do
 	dir=build/$(basename $ver)
 	mkdir -p $dir
+	mount -t tmpfs tmpfs $dir
 	mv $ver $dir/clang
 	cd $dir
 	rev=$(basename ${ver##*r})
