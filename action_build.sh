@@ -121,6 +121,7 @@ EOF
 	sudo rm -rf build build-$ARCH-$rev.tar
 
 	docker buildx rm -f debian-deb-$ARCH-$rev
+	rm -rf clang
 
 	cd $WORKDIR
 done
