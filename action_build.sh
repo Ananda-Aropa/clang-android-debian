@@ -98,6 +98,12 @@ EOF
 
 %:
 	dh \$@
+
+override_dh_auto_test:
+
+override_dh_dwz:
+
+
 EOF
 	cat <<EOF >debian/install
 clang opt/android
