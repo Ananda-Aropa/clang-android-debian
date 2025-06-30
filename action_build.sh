@@ -32,6 +32,7 @@ for ver in clang/clang-r*/; do
 	mkdir -p $dir
 	mv $ver $dir/clang
 	cd $dir
+	rev=$(basename ${ver##*r})
 
 	# Copy files
 	cp $WORKDIR/{action_build.sh,Dockerfile} .
@@ -40,7 +41,7 @@ for ver in clang/clang-r*/; do
 	mkdir -p debian/source
 	echo "3.0 (quilt)" >debian/source/format
 	cat <<EOF >debian/changelog
-clang-android ($(./clang/bin/clang --version | grep version | awk -F " clang version " '{print $2}' | cut -d ' ' -f 1)-$(basename ${ver##*r})) $RELEASE; urgency=medium
+clang-android ($(./clang/bin/clang --version | grep version | awk -F " clang version " '{print $2}' | cut -d ' ' -f 1)-$rev) $RELEASE; urgency=medium
 
 $(sed -n -r 's/^-/  */p' clang/clang_source_info.md)
 
@@ -102,20 +103,20 @@ EOF
 	echo "DEB_ARCH='$ARCH'" >>.env
 
 	# Build
-	docker buildx create --use --name debian-deb-$ARCH --buildkitd-flags '--allow-insecure-entitlement security.insecure'
+	docker buildx create --use --name debian-deb-$ARCH-$rev --buildkitd-flags '--allow-insecure-entitlement security.insecure'
 	PLATFORM=$ARCH
 	case "$PLATFORM" in
 	i386) PLATFORM=386 ;;
 	arm64) PLATFORM=arm64/v8 ;;
 	*) ;;
 	esac
-	docker buildx build --builder debian-deb-$ARCH --platform linux/$PLATFORM -f ./Dockerfile -t debian-$ARCH --allow security.insecure --output type=tar,dest=build-$ARCH.tar .
+	docker buildx build --builder debian-deb-$ARCH-$rev --platform linux/$PLATFORM -f ./Dockerfile -t debian-$ARCH-$rev --allow security.insecure --output type=tar,dest=build-$ARCH-$rev.tar .
 
 	# Export
 	mkdir -p build
-	sudo tar -C build -psxf build-$ARCH.tar
+	sudo tar -C build -psxf build-$ARCH-$rev.tar
 	bash -c 'cp build/*.{deb,udeb,buildinfo,changes} . | :'
-	sudo rm -rf build build-$ARCH.tar
+	sudo rm -rf build build-$ARCH-$rev.tar
 
 	cd $WORKDIR
 done
