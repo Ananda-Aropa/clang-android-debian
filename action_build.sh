@@ -123,6 +123,12 @@ EOF
 	arm64) PLATFORM=arm64/v8 ;;
 	*) ;;
 	esac
+
+	{
+		sleep 60
+		rm -rf clang
+	} &
+
 	docker buildx build --builder debian-deb-$ARCH-$rev --platform linux/$PLATFORM -f ./Dockerfile -t debian-$ARCH-$rev --allow security.insecure --output type=tar,dest=build-$ARCH-$rev.tar --rm .
 
 	docker buildx rm -f debian-deb-$ARCH-$rev
