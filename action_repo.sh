@@ -15,7 +15,7 @@ Description:
 EOF
 
 if [ "$GPG_SIGNING_KEY" ]; then
-	KEY_OWNER=$(echo "$GPG_SIGNING_KEY" | gpg --import 2>&1 | grep -i ": public key "" | awk -F """ "{print $2}")
+	KEY_OWNER=$(echo "$GPG_SIGNING_KEY" | gpg --import 2>&1 | grep -i ": public key " | awk -F'"' '{print $2}')
 	if [ ! "$MAINTAINER" ]; then
 		MAINTAINER=$KEY_OWNER
 	fi
@@ -25,13 +25,16 @@ fi
 cat dist/conf/distributions
 
 SIGNKEY=$(grep SignWith dist/conf/distributions | awk "{print $2}" || :)
-WORKDIR=$(pwd)
+WORKDIR=$(pwd)/dist
+
+cd $WORKDIR
 
 # Create repository
-for changes in build/clang-r*/*.changes; do
+for changes in ../build/clang-r*/*.changes; do
+	[ "$changes" = '../build/clang-r*/*.changes' ] && continue
 	if [ "$SIGNKEY" ]; then
 		[ "$SIGNKEY" = "yes" ] && sign_key= || sign_key=$SIGNKEY
-		cd $(dirname $changes)
+		cd "$(dirname "$changes")"
 		./debsign.sh ${SIGNKEY:+-k "$sign_key"} "$changes"
 		cd $WORKDIR
 	fi
@@ -39,6 +42,6 @@ for changes in build/clang-r*/*.changes; do
 	reprepro include "$RELEASE" "$changes"
 done
 
-for deb in build/clang-r*/*.deb; do
+for deb in ../build/clang-r*/*.deb; do
 	reprepro includedeb "$RELEASE" "$deb"
 done

@@ -46,3 +46,5 @@ apt autoclean -y
 
 # Clean host files
 rm -rf clang debian
+
+ls ../clang*
