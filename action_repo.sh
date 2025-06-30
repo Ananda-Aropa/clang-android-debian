@@ -3,7 +3,28 @@
 # Install neccessary tools
 sudo apt install -y reprepro gnupg
 
-SIGNKEY=$(grep SignWith dist/conf/distributions | awk '{print $2}' || :)
+mkdir -p dist/conf
+cat <<EOF >dist/conf/distributions
+Origin: $ORIGIN
+Label: clang-android
+Codename: $RELEASE
+Arch: $ARCH
+Components: 
+UDebComponents: 
+Description: 
+EOF
+
+if [ "$GPG_SIGNING_KEY" ]; then
+	KEY_OWNER=$(echo "$GPG_SIGNING_KEY" | gpg --import 2>&1 | grep -i ": public key "" | awk -F """ "{print $2}")
+	if [ ! "$MAINTAINER" ]; then
+		MAINTAINER=$KEY_OWNER
+	fi
+	KEY_FINGERPRINT=$(gpg --list-secret-key --with-subkey-fingerprint | grep -A3 "$MAINTAINER" | tail -2)
+	echo "SignWith: $KEY_FINGERPRINT" >>dist/conf/distributions
+fi
+cat dist/conf/distributions
+
+SIGNKEY=$(grep SignWith dist/conf/distributions | awk "{print $2}" || :)
 WORKDIR=$(pwd)
 
 # Create repository

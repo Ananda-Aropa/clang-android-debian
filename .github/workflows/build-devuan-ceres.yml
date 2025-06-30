@@ -38,44 +38,18 @@ jobs:
 
       - name: Build packages
         env:
-          MAINTAINER: ${{ secrets.PACKAGE_MAINTAINER }}
+          MAINTAINER: ${{ secrets.MAINTAINER }}
           ARCH: ${{ secrets.ARCH }}
           RELEASE: ${{ secrets.CODENAME }}
         run: ./action_build.sh
 
-      - name: Generate distributions file
+      - name: Generate repo artifact
         env:
           GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
-          MAINTAINER: ${{ secrets.PACKAGE_MAINTAINER }}
+          MAINTAINER: ${{ secrets.MAINTAINER }}
           ARCH: ${{ secrets.ARCH }}
           RELEASE: ${{ secrets.CODENAME }}
           ORIGIN: ${{ secrets.ORIGIN }}
-        run: |
-          mkdir -p dist/conf
-          echo "Origin: $ORIGIN" >>dist/conf/distributions
-          echo 'Label: clang-android' >>dist/conf/distributions
-          echo 'Codename: $RELEASE' >>dist/conf/distributions
-          echo "Arch: $ARCH" >>dist/conf/distributions
-          echo "Components: " >>dist/conf/distributions
-          echo "UDebComponents: " >>dist/conf/distributions
-          echo "Description: " >>dist/conf/distributions
-          if [ "$GPG_SIGNING_KEY" ]; then
-            KEY_OWNER=$(echo "$GPG_SIGNING_KEY" | gpg --import 2>&1 | grep -i ': public key "' | awk -F '"' '{print $2}')
-            if [ ! "$MAINTAINER" ]; then
-              MAINTAINER=$KEY_OWNER
-            fi
-            echo "DEBEMAIL='$(echo $MAINTAINER | awk -F '<' '{print $2}' | awk -F '>' '{print $1}')'" >>"$GITHUB_OUTPUT"
-            echo "DEBFULLNAME='$(echo $MAINTAINER | awk -F '<' '{print $1}')'" >>"$GITHUB_OUTPUT"
-            source "$GITHUB_OUTPUT"
-            KEY_FINGERPRINT=$(gpg --list-secret-key --with-subkey-fingerprint | grep -A3 "$MAINTAINER" | tail -2)
-            echo "SignWith: $KEY_FINGERPRINT" >>dist/conf/distributions
-          fi
-          cat dist/conf/distributions
-        shell: bash
-
-      - name: Generate repo artifact
-        env:
-          RELEASE: ${{ secrets.CODENAME }}
         run: ./action_repo.sh
 
       - name: Setup Pages
