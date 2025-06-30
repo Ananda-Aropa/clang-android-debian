@@ -41,5 +41,5 @@ source .build_env
 dpkg-buildpackage $DEB_BUILD_ARGS
 
 # Uninstall packages and clean up
-apt autoremove --purge -y debhelper build-essential grep mawk
+apt autoremove --purge -y debhelper build-essential
 apt autoclean -y
