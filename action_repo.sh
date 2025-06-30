@@ -12,8 +12,12 @@ for changes in build/clang-r*/*.changes; do
 		[ "$SIGNKEY" = "yes" ] && sign_key= || sign_key=$SIGNKEY
 		cd $(dirname $changes)
 		./debsign.sh ${SIGNKEY:+-k "$sign_key"} "$changes"
-		cd $pwd
+		cd $WORKDIR
 	fi
 
 	reprepro include "$RELEASE" "$changes"
+done
+
+for deb in build/clang-r*/*.deb; do
+	reprepro includedeb "$RELEASE" "$deb"
 done
