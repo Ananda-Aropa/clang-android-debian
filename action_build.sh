@@ -105,6 +105,8 @@ override_dh_dwz:
 
 override_dh_strip:
 
+override_dh_shlibdeps:
+
 EOF
 	cat <<EOF >debian/install
 clang opt/android
