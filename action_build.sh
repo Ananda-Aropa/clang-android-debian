@@ -13,10 +13,10 @@ exit_check() { [ "$1" = 0 ] || exit "$1"; }
 trap 'exit_check $?' EXIT
 
 # Update packages
-apt update && apt upgrade -y
+sudo apt update && apt upgrade -y
 
 # Install debhelper
-yes | apt install -y debhelper cryptsetup pkg-kde-tools pkexec rsync git wget || :
+yes | sudo apt install -y debhelper cryptsetup pkg-kde-tools pkexec rsync git wget || :
 
 # Clone original
 git clone \

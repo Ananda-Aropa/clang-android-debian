@@ -15,6 +15,13 @@ on:
 
 jobs:
   build:
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{steps.deployment.outputs.page_url}}
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -31,18 +38,18 @@ jobs:
 
       - name: Build packages
         env:
-          MAINTAINER: ${{ secrets.package_maintainer }}
-          ARCH: ${{ secrets.arch }}
-          RELEASE: ${{ secrets.codename }}
+          MAINTAINER: ${{ secrets.PACKAGE_MAINTAINER }}
+          ARCH: ${{ secrets.ARCH }}
+          RELEASE: ${{ secrets.CODENAME }}
         run: ./action_build.sh
 
       - name: Generate distributions file
         env:
-          GPG_SIGNING_KEY: ${{ secrets.gpg_signing_key }}
-          MAINTAINER: ${{ secrets.package_maintainer }}
-          ARCH: ${{ secrets.arch }}
-          RELEASE: ${{ secrets.codename }}
-          ORIGIN: ${{ secrets.origin }}
+          GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
+          MAINTAINER: ${{ secrets.PACKAGE_MAINTAINER }}
+          ARCH: ${{ secrets.ARCH }}
+          RELEASE: ${{ secrets.CODENAME }}
+          ORIGIN: ${{ secrets.ORIGIN }}
         run: |
           mkdir -p dist/conf
           echo "Origin: $ORIGIN" >>dist/conf/distributions
@@ -68,8 +75,11 @@ jobs:
 
       - name: Generate repo artifact
         env:
-          RELEASE: ${{ secrets.codename }}
+          RELEASE: ${{ secrets.CODENAME }}
         run: ./action_repo.sh
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
 
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3

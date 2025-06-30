@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Install neccessary tools
-apt install -y reprepro gnupg
+sudo apt install -y reprepro gnupg
 
 SIGNKEY=$(grep SignWith dist/conf/distributions | awk '{print $2}' || :)
 
