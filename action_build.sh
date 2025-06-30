@@ -12,8 +12,8 @@ SOURCE="https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86
 exit_check() { [ "$1" = 0 ] || exit "$1"; }
 trap 'exit_check $?' EXIT
 
-# Update packages
-sudo apt update && apt upgrade -y
+# # Update packages
+# sudo apt update && apt upgrade -y
 
 # Install debhelper
 yes | sudo apt install -y debhelper cryptsetup pkg-kde-tools pkexec rsync git wget || :
