@@ -39,3 +39,7 @@ source .build_env
 
 # Build binary package
 dpkg-buildpackage $DEB_BUILD_ARGS
+
+# Uninstall packages and clean up
+apt autoremove --purge -y debhelper build-essential grep mawk
+apt autoclean -y

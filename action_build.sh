@@ -123,16 +123,14 @@ EOF
 	arm64) PLATFORM=arm64/v8 ;;
 	*) ;;
 	esac
-	docker buildx build --builder debian-deb-$ARCH-$rev --platform linux/$PLATFORM -f ./Dockerfile -t debian-$ARCH-$rev --allow security.insecure --output type=tar,dest=build-$ARCH-$rev.tar .
-
-	# Export
-	mkdir -p build
-	sudo tar -C build -psxf build-$ARCH-$rev.tar
-	bash -c 'cp build/*.{deb,udeb,buildinfo,changes} . | :'
-	sudo rm -rf build build-$ARCH-$rev.tar
+	docker buildx build --builder debian-deb-$ARCH-$rev --platform linux/$PLATFORM -f ./Dockerfile -t debian-$ARCH-$rev --allow security.insecure --output type=tar,dest=build-$ARCH-$rev.tar --rm .
 
 	docker buildx rm -f debian-deb-$ARCH-$rev
 	rm -rf clang
+
+	# Export
+	sudo tar -C . -psxf build-$ARCH-$rev.tar --wildcards --no-anchored "clang-android*.{deb,udeb,buildinfo,changes}"
+	sudo rm -rf build-$ARCH-$rev.tar
 
 	cd $WORKDIR
 done
