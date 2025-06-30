@@ -35,7 +35,7 @@ for ver in clang/clang-r*/; do
 	rev=$(basename ${ver##*r})
 
 	# Copy files
-	cp $WORKDIR/{action_build.sh,Dockerfile} .
+	cp $WORKDIR/{docker_build.sh,Dockerfile} .
 
 	# Generate debian config
 	mkdir -p debian/source
@@ -117,6 +117,8 @@ EOF
 	sudo tar -C build -psxf build-$ARCH-$rev.tar
 	bash -c 'cp build/*.{deb,udeb,buildinfo,changes} . | :'
 	sudo rm -rf build build-$ARCH-$rev.tar
+
+	docker buildx rm -f debian-deb-$ARCH-$rev
 
 	cd $WORKDIR
 done
