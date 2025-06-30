@@ -104,6 +104,7 @@ clang opt/android
 EOF
 	dpkg-architecture -A $ARCH >.build_env
 	echo "DEB_ARCH='$ARCH'" >>.env
+	echo "DEB_BUILD_ARGS='-b'" >>.env
 
 	# Build
 	docker buildx create --use --name debian-deb-$ARCH-$rev --buildkitd-flags '--allow-insecure-entitlement security.insecure'
