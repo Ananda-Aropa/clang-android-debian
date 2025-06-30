@@ -103,6 +103,7 @@ override_dh_auto_test:
 
 override_dh_dwz:
 
+override_dh_strip:
 
 EOF
 	cat <<EOF >debian/install
