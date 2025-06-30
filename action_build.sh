@@ -142,9 +142,7 @@ EOF
 	sudo tar \
 		-C . \
 		-psxf build-$ARCH-$rev.tar \
-		"${NAME}_${VERSION}_${ARCH}.deb" \
-		"${NAME}_${VERSION}_${ARCH}.buildinfo" \
-		"${NAME}_${VERSION}_${ARCH}.changes"
+		--wildcards --no-anchored "${NAME}_${VERSION}_${ARCH}.*"
 	sudo rm -rf build-$ARCH-$rev.tar
 
 	cd $WORKDIR
