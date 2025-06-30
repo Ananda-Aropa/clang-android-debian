@@ -32,7 +32,7 @@ mkdir -p build
 for ver in clang/clang-r*/; do
 	dir=build/$(basename $ver)
 	mkdir -p $dir
-	mount -t tmpfs tmpfs $dir
+	sudo mount -t tmpfs tmpfs $dir
 	mv $ver $dir/clang
 	cd $dir
 	rev=$(basename ${ver##*r})
@@ -136,7 +136,14 @@ EOF
 	rm -rf clang
 
 	# Export
-	sudo tar -C . -psxf build-$ARCH-$rev.tar --wildcards --no-anchored "clang-android*.{deb,udeb,buildinfo,changes}"
+	sudo tar \
+		-C . \
+		-psxf build-$ARCH-$rev.tar \
+		--wildcards \
+		--no-anchored \
+		"clang-android*.deb" \
+		"clang-android*.buildinfo" \
+		"clang-android*.changes"
 	sudo rm -rf build-$ARCH-$rev.tar
 
 	cd $WORKDIR

@@ -46,6 +46,3 @@ apt autoclean -y
 
 # Clean host files
 rm -rf clang debian
-
-# Bring files back
-cp -rf ../*.{deb,udeb,buildinfo,changes} .
