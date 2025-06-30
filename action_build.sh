@@ -15,8 +15,8 @@ trap 'exit_check $?' EXIT
 # # Update packages
 # sudo apt update && apt upgrade -y
 
-# Install debhelper
-yes | sudo apt install -y debhelper cryptsetup pkg-kde-tools pkexec rsync git wget || : >/dev/null 2>&1
+# # Install debhelper
+# yes | sudo apt install -y debhelper cryptsetup pkg-kde-tools pkexec rsync git wget || : >/dev/null 2>&1
 
 # Clone original
 git clone \
