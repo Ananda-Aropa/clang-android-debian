@@ -41,7 +41,3 @@ for changes in ../build/clang-r*/*.changes; do
 
 	reprepro include "$RELEASE" "$changes"
 done
-
-for deb in ../build/clang-r*/*.deb; do
-	reprepro includedeb "$RELEASE" "$deb"
-done

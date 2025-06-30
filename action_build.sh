@@ -23,8 +23,7 @@ git clone \
 	$SOURCE \
 	--depth 1 \
 	-b main \
-	clang \
-	>/dev/null 2>&1
+	clang
 
 rm -rf clang/{.git,clang-stable,embedded-sysroots,profiles}
 
@@ -139,11 +138,9 @@ EOF
 	sudo tar \
 		-C . \
 		-psxf build-$ARCH-$rev.tar \
-		--wildcards \
-		--no-anchored \
-		"*.deb" \
-		"*.buildinfo" \
-		"*.changes"
+		--wildcards --no-anchored "*.deb" \
+		--wildcards --no-anchored "*.buildinfo" \
+		--wildcards --no-anchored "*.changes"
 	sudo rm -rf build-$ARCH-$rev.tar
 
 	cd $WORKDIR
