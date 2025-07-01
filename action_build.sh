@@ -28,25 +28,33 @@ git clone \
 
 rm -rf clang/{.git,clang-stable,embedded-sysroots,profiles}
 
-mkdir -p build
+latest=0
 for ver in clang/clang-r*/; do
-	dir=build/$(basename $ver)
-	mkdir -p $dir
-	sudo mount -t tmpfs tmpfs $dir
-	mv $ver $dir/clang
-	cd $dir
 	rev=$(basename ${ver##*r})
 
-	# Copy files
-	cp $WORKDIR/{docker_build.sh,Dockerfile} .
+	if [ "$rev" -gt "$latest" ]; then
+		latest=$rev
+	fi
+done
+rev=$latest
 
-	# Env
-	VERSION=$(./clang/bin/clang --version | grep version | awk -F " clang version " '{print $2}' | cut -d ' ' -f 1)-$rev
+mkdir -p build
+dir=build/clang-r$rev
+mkdir -p $dir
+sudo mount -t tmpfs tmpfs $dir
+mv $latest $dir/clang
+cd $dir
 
-	# Generate debian config
-	mkdir -p debian/source
-	echo "3.0 (quilt)" >debian/source/format
-	cat <<EOF >debian/changelog
+# Copy files
+cp $WORKDIR/{docker_build.sh,Dockerfile} .
+
+# Env
+VERSION=$(./clang/bin/clang --version | grep version | awk -F " clang version " '{print $2}' | cut -d ' ' -f 1)-$rev
+
+# Generate debian config
+mkdir -p debian/source
+echo "3.0 (quilt)" >debian/source/format
+cat <<EOF >debian/changelog
 $NAME ($VERSION) $RELEASE; urgency=medium
 
 $(sed -n -r 's/^-/  */p' clang/clang_source_info.md)
@@ -54,7 +62,7 @@ $(sed -n -r 's/^-/  */p' clang/clang_source_info.md)
  -- $MAINTAINER  $(date +"%a, %d %b %Y %H:%M:%S %z")
 
 EOF
-	cat <<EOF >debian/control
+cat <<EOF >debian/control
 Source: $NAME
 Section: unknown
 Priority: optional
@@ -74,7 +82,7 @@ Depends:
  \${misc:Depends},
 Description: Android Clang/LLVM Prebuilts
 EOF
-	cat <<EOF >debian/copyright
+cat <<EOF >debian/copyright
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Source: $SOURCE
 Upstream-Name: $NAME
@@ -97,7 +105,7 @@ Copyright:
  $(date +%Y) $MAINTAINER
 License: GPL-2+
 EOF
-	cat <<EOF >debian/rules
+cat <<EOF >debian/rules
 #!/usr/bin/make -f
 
 %:
@@ -112,39 +120,38 @@ override_dh_strip:
 override_dh_shlibdeps:
 
 EOF
-	cat <<EOF >debian/install
+cat <<EOF >debian/install
 clang opt/android
 EOF
-	dpkg-architecture -A $ARCH >.build_env
-	echo "DEB_ARCH='$ARCH'" >>.env
-	echo "DEB_BUILD_ARGS='-b'" >>.env
+dpkg-architecture -A $ARCH >.build_env
+echo "DEB_ARCH='$ARCH'" >>.env
+echo "DEB_BUILD_ARGS='-b'" >>.env
 
-	# Build
-	docker buildx create --use --name debian-deb-$ARCH-$rev --buildkitd-flags '--allow-insecure-entitlement security.insecure'
-	PLATFORM=$ARCH
-	case "$PLATFORM" in
-	i386) PLATFORM=386 ;;
-	arm64) PLATFORM=arm64/v8 ;;
-	*) ;;
-	esac
+# Build
+docker buildx create --use --name debian-deb-$ARCH-$rev --buildkitd-flags '--allow-insecure-entitlement security.insecure'
+PLATFORM=$ARCH
+case "$PLATFORM" in
+i386) PLATFORM=386 ;;
+arm64) PLATFORM=arm64/v8 ;;
+*) ;;
+esac
 
-	{
-		sleep 60
-		rm -rf clang
-	} &
-
-	docker buildx build --builder debian-deb-$ARCH-$rev --platform linux/$PLATFORM -f ./Dockerfile -t debian-$ARCH-$rev --allow security.insecure --output type=tar,dest=build-$ARCH-$rev.tar --rm .
-
-	docker buildx rm -f debian-deb-$ARCH-$rev
+{
+	sleep 60
 	rm -rf clang
+} &
 
-	# Export
-	sudo tar \
-		-C . \
-		-psxf build-$ARCH-$rev.tar \
-		--wildcards --no-anchored "${NAME}_${VERSION}_${ARCH}.*"
-	ls ${NAME}_${VERSION}_${ARCH}.*
-	sudo rm -rf build-$ARCH-$rev.tar
+docker buildx build --builder debian-deb-$ARCH-$rev --platform linux/$PLATFORM -f ./Dockerfile -t debian-$ARCH-$rev --allow security.insecure --output type=tar,dest=build-$ARCH-$rev.tar --rm .
 
-	cd $WORKDIR
-done
+docker buildx rm -f debian-deb-$ARCH-$rev
+rm -rf clang
+
+# Export
+sudo tar \
+	-C . \
+	-psxf build-$ARCH-$rev.tar \
+	--wildcards --no-anchored "${NAME}_${VERSION}_${ARCH}.*"
+ls ${NAME}_${VERSION}_${ARCH}.*
+sudo rm -rf build-$ARCH-$rev.tar
+
+cd $WORKDIR

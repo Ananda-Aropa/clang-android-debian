@@ -11,7 +11,6 @@ Codename: $RELEASE
 Architectures: $ARCH
 Components: main
 UDebComponents: main
-Limit: 4
 Description: Android Clang/LLVM Prebuilts
 EOF
 
