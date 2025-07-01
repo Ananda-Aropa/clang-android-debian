@@ -13,6 +13,11 @@ on:
       - main
   workflow_dispatch:
 
+env:
+  ARCH: amd64
+  CODENAME: unstable
+  ORIGIN: BlissLabs
+
 jobs:
   build:
     permissions:
@@ -39,17 +44,17 @@ jobs:
       - name: Build packages
         env:
           MAINTAINER: ${{ secrets.MAINTAINER }}
-          ARCH: ${{ secrets.ARCH }}
-          RELEASE: ${{ secrets.CODENAME }}
+          ARCH: ${{ env.ARCH }}
+          RELEASE: ${{ env.CODENAME }}
         run: ./action_build.sh
 
       - name: Generate repo artifact
         env:
           GPG_SIGNING_KEY: ${{ secrets.GPG_SIGNING_KEY }}
           MAINTAINER: ${{ secrets.MAINTAINER }}
-          ARCH: ${{ secrets.ARCH }}
-          RELEASE: ${{ secrets.CODENAME }}
-          ORIGIN: ${{ secrets.ORIGIN }}
+          ARCH: ${{ env.ARCH }}
+          RELEASE: ${{ env.CODENAME }}
+          ORIGIN: ${{ env.ORIGIN }}
         run: ./action_repo.sh
 
       - name: Setup Pages

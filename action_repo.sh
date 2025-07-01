@@ -14,6 +14,7 @@ UDebComponents: main
 Description: Android Clang/LLVM Prebuilts
 EOF
 
+unset MAINTAINER
 if [ "$GPG_SIGNING_KEY" ]; then
 	KEY_OWNER=$(echo "$GPG_SIGNING_KEY" | gpg --import 2>&1 | grep -i ": public key " | awk -F'"' '{print $2}')
 	if [ ! "$MAINTAINER" ]; then
