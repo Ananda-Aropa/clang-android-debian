@@ -9,9 +9,9 @@ Origin: $ORIGIN
 Label: clang-android
 Codename: $RELEASE
 Architectures: $ARCH
-Components: 
-UDebComponents: 
-Description: 
+Components: main
+UDebComponents: main
+Description: Android Clang/LLVM Prebuilts
 EOF
 
 if [ "$GPG_SIGNING_KEY" ]; then
