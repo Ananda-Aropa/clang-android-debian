@@ -41,15 +41,13 @@ rev=$latest
 mkdir -p build
 dir=build/clang-r$rev
 mkdir -p $dir
-sudo mount -t tmpfs tmpfs $dir
-mv $latest $dir/clang
+mv clang/clang-r$latest $dir/clang
 cd $dir
+
+rm -rf $WORKDIR/clang
 
 # Copy files
 cp $WORKDIR/{docker_build.sh,Dockerfile} .
-
-
-ls -lAsh . clang
 
 # Env
 VERSION=$(./clang/bin/clang --version | grep version | awk -F " clang version " '{print $2}' | cut -d ' ' -f 1)-$rev
