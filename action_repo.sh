@@ -11,6 +11,7 @@ Codename: $RELEASE
 Architectures: $ARCH
 Components: main
 UDebComponents: main
+Limit: 4
 Description: Android Clang/LLVM Prebuilts
 EOF
 
@@ -36,7 +37,7 @@ for changes in ../build/clang-r*/*.changes; do
 	if [ "$SIGNKEY" ]; then
 		[ "$SIGNKEY" = "yes" ] && sign_key= || sign_key=$SIGNKEY
 		cd "$(dirname "$changes")"
-		"$WORKDIR"/../debsign.sh ${SIGNKEY:+-k "$sign_key"} "$changes"
+		"$WORKDIR"/../debsign.sh ${SIGNKEY:+-k "$sign_key"} "*.changes"
 		cd $WORKDIR
 	fi
 
