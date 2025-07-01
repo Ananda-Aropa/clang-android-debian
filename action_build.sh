@@ -48,6 +48,9 @@ cd $dir
 # Copy files
 cp $WORKDIR/{docker_build.sh,Dockerfile} .
 
+
+ls -lAsh . clang
+
 # Env
 VERSION=$(./clang/bin/clang --version | grep version | awk -F " clang version " '{print $2}' | cut -d ' ' -f 1)-$rev
 
