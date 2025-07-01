@@ -143,6 +143,7 @@ EOF
 		-C . \
 		-psxf build-$ARCH-$rev.tar \
 		--wildcards --no-anchored "${NAME}_${VERSION}_${ARCH}.*"
+	ls ${NAME}_${VERSION}_${ARCH}.*
 	sudo rm -rf build-$ARCH-$rev.tar
 
 	cd $WORKDIR

@@ -8,7 +8,7 @@ cat <<EOF >dist/conf/distributions
 Origin: $ORIGIN
 Label: clang-android
 Codename: $RELEASE
-Arch: $ARCH
+Architectures: $ARCH
 Components: 
 UDebComponents: 
 Description: 
@@ -35,7 +35,7 @@ for changes in ../build/clang-r*/*.changes; do
 	if [ "$SIGNKEY" ]; then
 		[ "$SIGNKEY" = "yes" ] && sign_key= || sign_key=$SIGNKEY
 		cd "$(dirname "$changes")"
-		./debsign.sh ${SIGNKEY:+-k "$sign_key"} "$changes"
+		"$WORKDIR"/../debsign.sh ${SIGNKEY:+-k "$sign_key"} "$changes"
 		cd $WORKDIR
 	fi
 
