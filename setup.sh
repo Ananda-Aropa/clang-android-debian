@@ -40,7 +40,7 @@ cp -rf clang/clang-r$latest build
 rm -rf clang
 
 # Env
-VERSION=$(.build/bin/clang --version | grep version | awk -F " clang version " '{print $2}' | cut -d ' ' -f 1)-$rev
+VERSION=$(./build/bin/clang --version | grep version | awk -F " clang version " '{print $2}' | cut -d ' ' -f 1)-$rev
 
 # Generate debian config
 cat <<EOF >debian/changelog
