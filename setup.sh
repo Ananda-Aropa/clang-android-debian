@@ -2,7 +2,6 @@
 # shellcheck disable=2086,2103,2164,2317
 
 cd "$(dirname "$0")"
-WORKDIR=$(pwd)
 SOURCE="https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86"
 ARCH=${ARCH:-amd64}
 RELEASE=${RELEASE:-unstable}
@@ -33,12 +32,9 @@ done
 rev=$latest
 
 mkdir -p build
-dir=build/clang-r$rev
-mkdir -p $dir
-mv clang/clang-r$latest $dir/clang
-cd $dir
+cp -rf clang/clang-r$latest/. .
 
-rm -rf $WORKDIR/clang
+rm -rf clang
 
 # Env
 VERSION=$(./clang/bin/clang --version | grep version | awk -F " clang version " '{print $2}' | cut -d ' ' -f 1)-$rev
