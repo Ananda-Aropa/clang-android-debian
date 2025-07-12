@@ -1,7 +1,10 @@
 #!/bin/bash
 # shellcheck disable=2086,2103,2164,2317
 
+set -e
+
 cd "$(dirname "$0")"
+
 SOURCE="https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86"
 ARCH=${ARCH:-amd64}
 RELEASE=${RELEASE:-unstable}
@@ -37,7 +40,7 @@ cp -rf clang/clang-r$latest/. .
 rm -rf clang
 
 # Env
-VERSION=$(./clang/bin/clang --version | grep version | awk -F " clang version " '{print $2}' | cut -d ' ' -f 1)-$rev
+VERSION=$(./bin/clang --version | grep version | awk -F " clang version " '{print $2}' | cut -d ' ' -f 1)-$rev
 
 # Generate debian config
 cat <<EOF >debian/changelog
