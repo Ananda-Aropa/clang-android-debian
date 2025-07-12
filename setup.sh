@@ -34,9 +34,7 @@ for ver in clang/clang-r*/; do
 done
 rev=$latest
 
-mkdir -p build
-cp -rf clang/clang-r$latest build
-
+mv clang/clang-r$latest build
 rm -rf clang
 
 # Env
@@ -46,7 +44,7 @@ VERSION=$(./build/bin/clang --version | grep version | awk -F " clang version " 
 cat <<EOF >debian/changelog
 $NAME ($VERSION) $RELEASE; urgency=medium
 
-$(sed -n -r 's/^-/  */p' clang/clang_source_info.md)
+$(sed -n -r 's/^-/  */p' build/clang_source_info.md)
 
  -- $MAINTAINER  $(date +"%a, %d %b %Y %H:%M:%S %z")
 
