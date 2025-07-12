@@ -1,1 +1,1 @@
-clang opt/android
+build opt/android
